@@ -21,8 +21,10 @@ before uploading.
 
 = Features =
 
-* Automatically scales large image uploads to a more "sane" size for display in a browser
+* Automatically scales large image uploads to a more "sane" size
 * Allows configuration of max width/height
+* Once enabled, Imsanity requires no actions on the part of the user
+* Uses WordPress built-in image scaling functions
 
 == Installation ==
 
