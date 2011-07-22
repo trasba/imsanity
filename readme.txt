@@ -31,14 +31,14 @@ before uploading.
 
 Automatic Installation:
 
-1. Go to Admin - Plugins - Add New
-2. Search for Imsanity
-3. Click the Install Button
+1. Go to Admin - Plugins - Add New and search for "imsanity"
+2. Click the Install Button
+3. Click 'Activate'
 
 Manual Installation:
 
-1. Download imsanity.zip (or use the WordPress "Add New Plugin" feature)
-2. Extract the ZIP and upload the 'imsanity' folder to the '/wp-content/plugins/' directory
+1. Download imsanity.zip
+2. Unzip and upload the 'imsanity' folder to your '/wp-content/plugins/' directory
 3. Activate the plugin through the 'Plugins' menu in WordPress
 
 == Screenshots ==
