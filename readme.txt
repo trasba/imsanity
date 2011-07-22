@@ -43,7 +43,8 @@ Manual Installation:
 
 == Screenshots ==
 
-1. Options Page
+1. Imsanity girl will cut you
+2. Imsanity settings page to configure max height/width
 
 == Frequently Asked Questions ==
 
@@ -53,14 +54,27 @@ Imsanity is a plugin that automatically resizes uploaded images that are larger 
 
 = Why would I need this plugin? =
 
-The average computer screen is not big enough to display a 3 megapixel camera-phone image at full resolution.
-A 12 megapixel photograph is about 10 times too large to fit on a standard computer monitor.  Blog contributors
-may not understand this and upload large images, even though they will be squashed and displayed
-much smaller.  Unless there is a need to archive high-res originals they are at best a waste of disk
-space.
+A picture from a modern camera almost always needs to be scaled down to display properly in
+a browser.  The average computer screen is not big enough to display a 3 megapixel camera-phone image at full resolution.
+A 12 megapixel photograph is about 10 times larger than a standard computer monitor resolution.  Blog contributors
+may not understand this and upload huge image files, even though they will be squashed and displayed
+at a much smaller size.  Unless there is a need to archive high-res originals they are at usually just taking up disk
+space.  If the original image file winds up on the page, they can slow page load times and use bandwidth.
 
 Imsanity solves this issue by simply scaling all uploaded images down to a reasonable size for displaying in a 
 browser.
+
+= Doesn't WordPress already automatically scale images? =
+
+When an image is uploaded WordPress automatically creates up to 3 smaller sized copies of the file.  In 
+the media browser and gallery you can select "large" "medium" and "thumbnail" when inserting.   The original
+image is saved which, unless you are using WordPress to archive the originals, this is simply using up disk space.
+
+If a contributor doesn't select one of the smaller image sizes then they wind up putting the huge original 
+image onto a page and then "resize" it by adjusting the display size (these show up in the image dialog as
+percentages (50%, 60%, etc).  When you do this your visitors must download the huge file 
+(sometimes several megabytes) even though it only shows up as a small image on the page.  If you have a lot
+of these it can start to affect the performance of your site and create a poor user experience.
 
 = Where do I go for support? =
 

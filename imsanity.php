@@ -50,13 +50,15 @@ function imsanity_handle_upload($params)
 			
 			$newPath = image_resize( $oldPath, $newW, $newH);
 			
-			// method 1 - remove original and replace with re-sized image
+			/** method 1 **/
+			// remove original and replace with re-sized image
 			// (this could be problematic for image types other than gif,png,jpg because wordpress will
 			// convert all other types to jpg, which will make the original file extension incorrect)
 			unlink($oldPath);
 			rename($newPath, $oldPath);
 			
-			// method 2 - remove original and use the new resized image as the post attachment 
+			/** method 2 (TODO: more reliable, but not yet working) **/
+			// remove original and use the new resized image as the post attachment 
 			// (this leaves the post db record in an unknown state, though)
 			// $pathParts = pathinfo($newPath);
 			// $uploads = wp_upload_dir();

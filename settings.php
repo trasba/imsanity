@@ -54,7 +54,7 @@ function imsanity_settings_page() {
 <h2>Imsanity Settings</h2>
 
 <div id="imsanity_header" style="float: left;">
-	<img alt="Imsanity" src="<?php echo plugins_url().'/imsanity/images/imsanity.png'; ?>" style="float: right; margin-left: 15px;"/>
+	<a href="http://verysimple.com/products/imsanity/"><img alt="Imsanity" src="<?php echo plugins_url().'/imsanity/images/imsanity.png'; ?>" style="float: right; margin-left: 15px;"/></a>
 
 	<h4>Imsanity automatically resizes insanely huge image uploads</h4>
 	
@@ -65,12 +65,12 @@ function imsanity_settings_page() {
 	in their posts.  These images take up disk quota and, if used on a page, will use bandwidth and slow load times.</p>
 	
 	<p>Imsanity automaticaly reduces the size of images that are larger than the specified maximum and replaces the original
-	with one of a more "sane" size.  Site conntributors don't need to concern themselves with scaling images
+	with one of a more "sane" size.  Site contributors don't need to concern themselves with manually scaling images
 	and can upload them directly from their camera or phone.</p>
 	
 	<p>This plugin is designed for sites where high-resolution images are not necessary and/or the site contributors
 	do not want (or understand how) to deal with scaling their images.  This plugin should not be used on 
-	sites for which original, high-resolution images are stored.</p>
+	sites for which original, high-resolution images must be stored.</p>
 	
 	<p>Beware - This is a destructive plugin!  Be sure to keep back-ups of your full-sized images.</p>
 </div>
