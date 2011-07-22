@@ -6,7 +6,9 @@ Requires at least: 2.7
 Tested up to: 3.2.1
 Stable tag: trunk
 
-Imsanity automatically resizes insanely huge image uploads
+Imsanity automatically resizes insanely huge image uploads.  Do your contributors keep uploading
+huge images?  Are you tired of manually scaling your images before you upload?  Imsanity
+takes care of this for you by automatically scaling large images down to a "sane" size.
 
 == Description ==
 
