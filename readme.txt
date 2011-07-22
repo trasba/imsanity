@@ -1,20 +1,28 @@
 === Plugin Name ===
 Contributors: verysimple
 Donate link: http://verysimple.com/products/imsanity/
-Tags: imsanity
+Tags: imsanity, image, images, automatic scale, automatic resize, image resizer, image scaler
 Requires at least: 2.7
 Tested up to: 3.2.1
 Stable tag: trunk
 
-Imsanity short description...
+Imsanity automatically resizes insanely huge image uploads
 
 == Description ==
 
-Imsanity description
+Imsanity automatically resizes insanely huge image uploads down to a more reasonable size.
+The plugin is configurable with a max width and height.  Whenever a contributor uploads an
+image that is larger than the configured size, Imsanity will scale it down to the max
+size automatically and remove the original image.
+
+This is the perfect plugin for blogs that do not require hi-resolution original images
+to be stored and/or the contributors don't want (or understand how) to scale images
+before uploading.
 
 = Features =
 
-* Automatically scales images to a "sane" size for display
+* Automatically scales large image uploads to a more "sane" size for display in a browser
+* Allows configuration of max width/height
 
 == Installation ==
 
@@ -38,7 +46,7 @@ Manual Installation:
 
 = What is Imsanity? =
 
-Imsanity is a plugin that prevents users from loading insanely huge image files
+Imsanity is a plugin that automatically resizes uploaded images that are larger than the configured max width/height
 
 = Where do I go for support? =
 

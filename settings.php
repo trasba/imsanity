@@ -56,7 +56,7 @@ function imsanity_settings_page() {
 <div id="imsanity_header" style="float: left;">
 	<img alt="Imsanity" src="<?php echo plugins_url().'/imsanity/images/imsanity.png'; ?>" style="float: right; margin-left: 15px;"/>
 
-	<h4>Imsanity Stops Insanely Huge Image Uploads</h4>
+	<h4>Imsanity automatically resizes insanely huge image uploads</h4>
 	
 	<p>The resolution of modern cameras is larger than necessary for typical web display.  
 	In fact the average computer screen is not big enough to display a 3 megapixel camera-phone image at full resolution.
