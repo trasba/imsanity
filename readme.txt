@@ -50,6 +50,17 @@ Manual Installation:
 
 Imsanity is a plugin that automatically resizes uploaded images that are larger than the configured max width/height
 
+= Why would I need this plugin? =
+
+The average computer screen is not big enough to display a 3 megapixel camera-phone image at full resolution.
+A 12 megapixel photograph is about 10 times too large to fit on a standard computer monitor.  Blog contributors
+may not understand this and upload large images, even though they will be squashed and displayed
+much smaller.  Unless there is a need to archive high-res originals they are at best a waste of disk
+space.
+
+Imsanity solves this issue by simply scaling all uploaded images down to a reasonable size for displaying in a 
+browser.
+
 = Where do I go for support? =
 
 Documentation and support is available on the plugin homepage at http://verysimple.com/products/imsanity/
