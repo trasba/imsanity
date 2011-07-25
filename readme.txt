@@ -2,7 +2,7 @@
 Contributors: verysimple
 Donate link: http://verysimple.com/products/imsanity/
 Tags: imsanity, image, images, automatic scale, automatic resize, image resizer, image scaler
-Requires at least: 2.7
+Requires at least: 2.8
 Tested up to: 3.2.1
 Stable tag: trunk
 
@@ -55,8 +55,8 @@ Imsanity is a plugin that automatically resizes uploaded images that are larger 
 = Why would I need this plugin? =
 
 A picture from a modern camera almost always needs to be scaled down to display properly in
-a browser.  The average computer screen is not big enough to display a 3 megapixel camera-phone image at full resolution.
-A 12 megapixel photograph is about 10 times larger than a standard computer monitor resolution.  Blog contributors
+a browser.  The average computer screen is not big enough to display a 5 megapixel camera-phone image at full resolution.
+A 12 megapixel photograph is about 4 times larger than a standard computer monitor resolution.  Blog contributors
 may not understand this and upload huge image files, even though they will be squashed and displayed
 at a much smaller size.  Unless there is a need to archive high-res originals they are at usually just taking up disk
 space.  If the original image file winds up on the page, they can slow page load times and use bandwidth.
@@ -82,10 +82,13 @@ Documentation and support is available on the plugin homepage at http://verysimp
 
 == Upgrade Notice ==
 
-= 1.0.0 =
-* original release.  fresh!
+= 1.0.1 =
+* added error handling & reporting when image_resize returns an error
 
 == Changelog ==
+
+= 1.0.1 =
+* added error handling & reporting when image_resize returns an error
 
 = 1.0.0 =
 * original release.  fresh!
