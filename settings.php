@@ -18,6 +18,8 @@ function imsanity_register_settings() {
 	//register our settings
 	register_setting( 'imsanity-settings-group', 'imsanity_max_height' );
 	register_setting( 'imsanity-settings-group', 'imsanity_max_width' );
+	register_setting( 'imsanity-settings-group', 'imsanity_bmp_to_jpg' );
+	register_setting( 'imsanity-settings-group', 'imsanity_quality' );
 }
 
 function imsanity_settings_page() {
@@ -89,6 +91,28 @@ function imsanity_settings_page() {
         <tr valign="top">
         <th scope="row">Maximum Image Height</th>
         <td><input type="text" style="width:40px;" name="imsanity_max_height" value="<?php echo get_option('imsanity_max_height',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> (Enter 0 to disable)</td>
+        </tr>
+
+        <tr valign="top">
+        <th scope="row">JPG Image Quality</th>
+        <td><select name="imsanity_quality">
+        	<?php 
+        	$q = get_option('imsanity_quality',IMSANITY_DEFAULT_QUALITY);
+        	
+        	for ($x = 10; $x <= 100; $x = $x + 10)
+        	{
+        		echo "<option". ($q == $x ? " selected='selected'" : "") .">$x</option>";
+        	}
+        	?>
+        </select> (WordPress default is 90)</td>
+        </tr>
+
+        <tr valign="top">
+        <th scope="row">Convert BMP To JPG</th>
+        <td><select name="imsanity_bmp_to_jpg">
+        	<option <?php if (get_option('imsanity_bmp_to_jpg',IMSANITY_DEFAULT_BMP_TO_JPG) == "1") {echo "selected='selected'";} ?> value="1">Yes</option>
+        	<option <?php if (get_option('imsanity_bmp_to_jpg',IMSANITY_DEFAULT_BMP_TO_JPG) == "0") {echo "selected='selected'";} ?> value="0">No</option>
+        </select></td>
         </tr>
 
         <tr valign="top">

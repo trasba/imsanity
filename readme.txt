@@ -6,15 +6,18 @@ Requires at least: 2.8
 Tested up to: 3.2.1
 Stable tag: trunk
 
-Imsanity automatically resizes insanely huge image uploads.  Do contributors keep uploading
-huge photos?  Tired of manually scaling?  Imsanity does it automatically.
+Imsanity automatically resizes huge image uploads.  Are contributors uploading
+huge photos?  Tired of manually scaling?  Imsanity to the rescue.
 
 == Description ==
 
-Imsanity automatically resizes insanely huge image uploads down to a more reasonable size.
-The plugin is configurable with a max width and height.  Whenever a contributor uploads an
-image that is larger than the configured size, Imsanity will scale it down to the max
-size automatically and remove the original image.
+Imsanity automatically resizes insanely huge image uploads down to a size that is
+more reasonable for display in browser, yet still more than large enough for typical website use.
+The plugin is configurable with a max width, height and quality.  When a contributor uploads an
+image that is larger than the configured size, Imsanity will automatically scale it down to the 
+configured size remove the original image.
+
+Imsanity also handles bitmap images which WordPress is normally unable to scale.
 
 This is the perfect plugin for blogs that do not require hi-resolution original images
 to be stored and/or the contributors don't want (or understand how) to scale images
@@ -23,7 +26,8 @@ before uploading.
 = Features =
 
 * Automatically scales large image uploads to a more "sane" size
-* Allows configuration of max width/height
+* Allows configuration of max width/height and jpg quality
+* Optionally converts BMP files to JPG so image can be scaled
 * Once enabled, Imsanity requires no actions on the part of the user
 * Uses WordPress built-in image scaling functions
 
@@ -97,10 +101,15 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Upgrade Notice ==
 
-= 1.0.1 =
-* added error handling & reporting when image_resize returns an error
+= 1.0.2 =
+* added feature & setting to convert bmp images to jpg
+* added setting to control JPG quality
 
 == Changelog ==
+
+= 1.0.2 =
+* added feature & setting to convert bmp images to jpg
+* added setting to control JPG quality
 
 = 1.0.1 =
 * added error handling & reporting when image_resize returns an error
