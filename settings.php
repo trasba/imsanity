@@ -5,7 +5,15 @@
  * ################################################################################
  */
 
-function imsanity_create_menu() {
+// register the plugin settings menu
+add_action('admin_menu', 'imsanity_create_menu');
+
+/**
+ * Create the settings menu item in the WordPress admin navigation and 
+ * link it to the plugin settings page
+ */
+function imsanity_create_menu() 
+{
 
 	//create new top-level menu
 	add_options_page('Imsanity Plugin Settings', 'Imsanity', 'administrator', __FILE__, 'imsanity_settings_page');
@@ -14,7 +22,11 @@ function imsanity_create_menu() {
 	add_action( 'admin_init', 'imsanity_register_settings' );
 }
 
-function imsanity_register_settings() {
+/**
+ * Register the configuration settings that the plugin will use
+ */
+function imsanity_register_settings() 
+{
 	//register our settings
 	register_setting( 'imsanity-settings-group', 'imsanity_max_height' );
 	register_setting( 'imsanity-settings-group', 'imsanity_max_width' );
@@ -22,7 +34,11 @@ function imsanity_register_settings() {
 	register_setting( 'imsanity-settings-group', 'imsanity_quality' );
 }
 
-function imsanity_settings_page() {
+/**
+ * Render the settings page by writing directly to stdout
+ */
+function imsanity_settings_page() 
+{
 ?>
 <style>
 	#imsanity_header

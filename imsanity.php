@@ -1,8 +1,4 @@
 <?php
-/**
- * @package Imsanity
- * @version 1.0.0
- */
 /*
 Plugin Name: Imsanity
 Plugin URI: http://verysimple.com/products/imsanity/
@@ -21,8 +17,10 @@ define('IMSANITY_DEFAULT_QUALITY',90);
 /**
  * import supporting libraries
  */
-include_once(plugin_dir_path(__FILE__).'settings.php');
 include_once(plugin_dir_path(__FILE__).'libs/utils.php');
+
+// this will register the settings menu and page
+include_once(plugin_dir_path(__FILE__).'settings.php');
 
 
 /**
@@ -113,10 +111,9 @@ function imsanity_bmp_to_jpg($params)
 	
 	$quality = get_option('imsanity_quality',IMSANITY_DEFAULT_QUALITY);
 	
-	// lazy way of saving the file with a unique name is just add .jpg to the end
 	if (imagejpeg($bmp,$uploads['path'] . '/' . $newFileName, $quality))
 	{
-		// remove the original bmp
+		// conversion succeeded.  remove the original bmp & remap the params
 		unlink($params['file']);
 		
 		$params['file'] = $uploads['path'] . '/' . $newFileName;
@@ -138,7 +135,9 @@ function imsanity_bmp_to_jpg($params)
 
 
 add_filter( 'wp_handle_upload', 'imsanity_handle_upload' );
-add_action('admin_menu', 'imsanity_create_menu');
-// wp_update_attachment_metadata handler would allow updating the associated post
+
+// TODO: if necessary to update the post data in the future...
+// add_filter( 'wp_update_attachment_metadata', 'imsanity_handle_update_attachment_metadata' );
+
 
 ?>

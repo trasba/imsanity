@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: verysimple
 Donate link: http://verysimple.com/products/imsanity/
-Tags: imsanity, image, images, automatic scale, automatic resize, image resizer, image scaler
+Tags: imsanity, image, images, automatic scale, automatic resize, image resizer, image scaler, automatic image resizer, auto image resize, auto image resizer, space saver, image shrinker, image skruncher, image cruncher
 Requires at least: 2.8
 Tested up to: 3.2.1
 Stable tag: trunk
