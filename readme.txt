@@ -72,29 +72,39 @@ this message when you try to upload it.  For more info see http://php.net/manual
 
 Photos taken on any modern camera and even most cellphones are too large for display full-size in a browser.
 In the case of modern DSLR cameras, the image sizes are intended for high-quality printing and are ridiculously 
-over-sized for use on a web page.
+over-sized for display on a web page.
+
 Imsanity allows you to set a sanity limit so that all uploaded images will be constrained 
 to a reasonable size which is still more than large enough for the needs of a typical website.
+Imsanity hooks into WordPress immediately after the image upload, but before WordPress processing
+occurs.  So WordPress behaves exactly the same in all ways, except it will be as if the contributor
+had scaled their image to a reasonable size before uploading.
 
-= 4. Doesn't WordPress already automatically scale images? =
+The size limit that imsanity uses is configurable.  The default value is large enough to fill 
+the average vistors entire screen without scaling so it is still more than large enough for 
+typical usage.
+
+= 4. Why would I NOT want to use this plugin?
+
+You might not want to use Imsanity if you use WordPress as a stock art download
+site, provide high-res images for print or use WordPress as a high-res photo 
+storage archive.  If you are doing any of these things then most likely 
+you already have a good understanding of image resolution.
+
+= 5. Doesn't WordPress already automatically scale images? =
 
 When an image is uploaded WordPress keeps the original and, depending on the size of the original,
-will create up to 3 smaller sized copies of the file (Large, Medium, Thumbnail).  Unless you have
-special photographic needs, the original usually sits there un-used taking up space.
+will create up to 3 smaller sized copies of the file (Large, Medium, Thumbnail) which are intended
+for embedding on your pages.  Unless you have special photographic needs, the original usually sits 
+there unused, but taking up disk quota.
 
-WordPress expects you to embed the large, medium or thumbnail size images in your posts,
-however it is easy enough to embed the "original" size image and visually re-size it 
-in the browser.  This does not really change the file size of the original image, though and
-can create a slow browsing experience for visitors.  It is not always easy to explain this 
-subtle difference to site contributors.
-
-= 5. Why did you spell Insanity wrong and why does Imsanity girl want to cut me? =
+= 6. Why did you spell Insanity wrong and why does Imsanity girl want to cut me? =
 
 Imsanity is short for "Image Sanity Limit"  A sanity limit is a term for limiting something down to 
 a size or value that is reasonable.  Imsanity girl cuts because you drive her insane by uploading 
 unecessarily large images for no good reason.
 
-= 6. Where do I go for support? =
+= 7. Where do I go for support? =
 
 Documentation is available on the plugin homepage at http://wordpress.org/tags/imsanity and questions may 
 be posted on the support forum at http://wordpress.org/tags/imsanity
