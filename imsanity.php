@@ -4,11 +4,11 @@ Plugin Name: Imsanity
 Plugin URI: http://verysimple.com/products/imsanity/
 Description: Imsanity stops insanely huge image uploads
 Author: Jason Hinkle
-Version: 1.0.2
+Version: 2.0.0
 Author URI: http://verysimple.com/
 */
 
-define('IMSANITY_VERSION','1.0.2');
+define('IMSANITY_VERSION','2.0.0');
 define('IMSANITY_DEFAULT_MAX_WIDTH',1024);
 define('IMSANITY_DEFAULT_MAX_HEIGHT',1024);
 define('IMSANITY_DEFAULT_BMP_TO_JPG',1);
@@ -18,9 +18,8 @@ define('IMSANITY_DEFAULT_QUALITY',90);
  * import supporting libraries
  */
 include_once(plugin_dir_path(__FILE__).'libs/utils.php');
-
-// this will register the settings menu and page
 include_once(plugin_dir_path(__FILE__).'settings.php');
+include_once(plugin_dir_path(__FILE__).'ajax.php');
 
 
 /**
@@ -33,7 +32,9 @@ function imsanity_handle_upload($params)
 	/* debug logging... */
 	// file_put_contents ( "debug.txt" , print_r($params,1) . "\n" );
 	
-	if ($params['type'] == 'image/bmp' && get_option('imsanity_bmp_to_jpg',IMSANITY_DEFAULT_BMP_TO_JPG))
+	$option_convert_bmp = imsanity_get_option('imsanity_bmp_to_jpg',IMSANITY_DEFAULT_BMP_TO_JPG);
+	
+	if ($params['type'] == 'image/bmp' && $option_convert_bmp)
 	{
 		$params = imsanity_bmp_to_jpg($params);
 	}
@@ -43,14 +44,14 @@ function imsanity_handle_upload($params)
 	{
 		$oldPath = $params['file'];
 		
-		$maxW = get_option('imsanity_max_width',IMSANITY_DEFAULT_MAX_WIDTH);
-		$maxH = get_option('imsanity_max_height',IMSANITY_DEFAULT_MAX_HEIGHT);
+		$maxW = imsanity_get_option('imsanity_max_width',IMSANITY_DEFAULT_MAX_WIDTH);
+		$maxH = imsanity_get_option('imsanity_max_height',IMSANITY_DEFAULT_MAX_HEIGHT);
 		
 		list($oldW, $oldH) = getimagesize( $oldPath );
 		
 		if (($oldW > $maxW && $maxW > 0) || ($oldH > $maxH && $maxH > 0))
 		{
-			$quality = get_option('imsanity_quality',IMSANITY_DEFAULT_QUALITY);
+			$quality = imsanity_get_option('imsanity_quality',IMSANITY_DEFAULT_QUALITY);
 			
 			list($newW, $newH) = wp_constrain_dimensions($oldW, $oldH, $maxW, $maxH);
 			
@@ -58,6 +59,9 @@ function imsanity_handle_upload($params)
 			
 			/* uncomment to debug error handling code: */
 			// $resizeResult = new WP_Error('invalid_image', __('Could not read image size'), $oldPath);
+			
+			// regardless of success/fail we're going to remove the original upload
+			unlink($oldPath);
 			
 			if (!is_wp_error($resizeResult))
 			{
@@ -69,8 +73,6 @@ function imsanity_handle_upload($params)
 			else
 			{
 				// resize didn't work, likely because the image processing libraries are missing
-				unlink($oldPath);
-
 				$params = wp_handle_upload_error( $oldPath , "Oh Snap! Imsanity was unable to resize this image "
 					. "for the following reason: '" . $resizeResult->get_error_message() . "'
 					.  If you continue to see this error message, you may need to either install missing server"
@@ -109,7 +111,7 @@ function imsanity_bmp_to_jpg($params)
 	$newFileName = basename(str_ireplace(".bmp", ".jpg", $oldFileName));
 	$newFileName = wp_unique_filename( $uploads['path'], $newFileName );
 	
-	$quality = get_option('imsanity_quality',IMSANITY_DEFAULT_QUALITY);
+	$quality = imsanity_get_option('imsanity_quality',IMSANITY_DEFAULT_QUALITY);
 	
 	if (imagejpeg($bmp,$uploads['path'] . '/' . $newFileName, $quality))
 	{
@@ -135,6 +137,7 @@ function imsanity_bmp_to_jpg($params)
 
 
 add_filter( 'wp_handle_upload', 'imsanity_handle_upload' );
+
 
 // TODO: if necessary to update the post data in the future...
 // add_filter( 'wp_update_attachment_metadata', 'imsanity_handle_update_attachment_metadata' );

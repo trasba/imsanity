@@ -2,7 +2,7 @@
 Contributors: verysimple
 Donate link: http://verysimple.com/products/imsanity/
 Tags: imsanity, image, images, automatic scale, automatic resize, image resizer, image scaler, automatic image resizer, auto image resize, auto image resizer, space saver, image shrinker, image skruncher, image cruncher
-Requires at least: 2.8
+Requires at least: 2.9
 Tested up to: 3.2.1
 Stable tag: trunk
 
@@ -49,6 +49,7 @@ Manual Installation:
 
 1. Imsanity girl will cut you
 2. Imsanity settings page to configure max height/width
+2. Imsanity bulk image resize feature
 
 == Frequently Asked Questions ==
 
@@ -58,9 +59,9 @@ Imsanity is a plugin that automatically resizes uploaded images that are larger 
 
 = 1. Will installing the Imsanity plugin alter existing images in my blog? =
 
-No.  Imsanity only resizes images as they are uploaded so the only files that will be affected are those which you upload
-after installing Imsanity.  It does not go through your blog and resize existing images (Although a bulk "cleanup" feature may
-be a feature one day if enough people request it - Imsanity will never do this automatically though.)
+Activating Imsanity will not alter any existing images.  Imsanity resizes images as they are uploaded so 
+it does not affect existing images unless you specifically use the "Bulk Image Resize" feature on
+the Imsanity settings page.  The "Bulk Image Resize" feature allows you to selectively resize existing images.
 
 = 2. Why am I getting an error saying that my "File is not an image" ? =
 
@@ -111,11 +112,18 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Upgrade Notice ==
 
-= 1.0.2 =
-* added feature & setting to convert bmp images to jpg
-* added setting to control JPG quality
+= 2.0.0 =
+* added network configuration for multi-site installation to enforce server-wide settings
+* added "bulk resize" feature to resize existing images and recover disk space
 
 == Changelog ==
+
+= 2.0.0 =
+* added network configuration for multi-site installation to enforce server-wide settings
+* added "bulk resize" feature to resize existing images and recover disk space
+
+= 1.1.0 =
+* added ms-config.php file that can be used for global settings configuration
 
 = 1.0.2 =
 * added feature & setting to convert bmp images to jpg

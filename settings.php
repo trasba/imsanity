@@ -1,12 +1,23 @@
 <?php
 /** 
  * ################################################################################
- * ADMIN/SETTINGS UI
+ * IMSANITY ADMIN/SETTINGS UI
  * ################################################################################
  */
 
 // register the plugin settings menu
 add_action('admin_menu', 'imsanity_create_menu');
+add_action( 'network_admin_menu', 'imsanity_register_network' );
+
+// activation hooks
+// TODO: custom table is not removed because de-activating one site shouldn't affect the entire server
+register_activation_hook('imsanity/imsanity.php', imsanity_maybe_created_custom_table );
+// add_action('plugins_loaded', 'imsanity_maybe_created_custom_table');
+// register_deactivation_hook('imsanity/imsanity.php', ...);
+// register_uninstall_hook('imsanity/imsanity.php', 'imsanity_maybe_remove_custom_table');
+
+// settings cache
+$_imsanity_multisite_settings = null;
 
 /**
  * Create the settings menu item in the WordPress admin navigation and 
@@ -14,12 +25,266 @@ add_action('admin_menu', 'imsanity_create_menu');
  */
 function imsanity_create_menu() 
 {
-
-	//create new top-level menu
+	// create new menu for site configuration
 	add_options_page('Imsanity Plugin Settings', 'Imsanity', 'administrator', __FILE__, 'imsanity_settings_page');
 
-	//call register settings function
+	// call register settings function
 	add_action( 'admin_init', 'imsanity_register_settings' );
+}
+
+// TODO: legacy code to support previous MU version... ???
+// if ( dm_site_admin() && version_compare( $wp_version, '3.0.9', '<=' ) ) {
+// 	if ( version_compare( $wp_version, '3.0.1', '<=' ) ) {
+// 		add_submenu_page('wpmu-admin.php', __( 'Domain Mapping', 'wordpress-mu-domain-mapping' ), __( 'Domain Mapping', 'wordpress-mu-domain-mapping'), 'manage_options', 'dm_admin_page', 'dm_admin_page');
+// 		add_submenu_page('wpmu-admin.php', __( 'Domains', 'wordpress-mu-domain-mapping' ), __( 'Domains', 'wordpress-mu-domain-mapping'), 'manage_options', 'dm_domains_admin', 'dm_domains_admin');
+// 	} else {
+// 		add_submenu_page('ms-admin.php', __( 'Domain Mapping', 'wordpress-mu-domain-mapping' ), 'Domain Mapping', 'manage_options', 'dm_admin_page', 'dm_admin_page');
+// 		add_submenu_page('ms-admin.php', __( 'Domains', 'wordpress-mu-domain-mapping' ), 'Domains', 'manage_options', 'dm_domains_admin', 'dm_domains_admin');
+// 	}
+// }
+// add_action( 'admin_menu', 'dm_add_pages' );
+
+/**
+ * Returns the name of the custom multi-site settings table
+ * Enter description here ...
+ */
+function imsanity_get_custom_table_name()
+{
+	global $wpdb;
+	return $wpdb->prefix . "imsanity";
+}
+
+/**
+ * Return true if the multi-site settings table exists
+ * @return bool
+ */
+function imsanity_multisite_table_exists()
+{
+	global $wpdb;
+	$table_name = imsanity_get_custom_table_name();
+	return $wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") == $table_name;
+}
+
+/**
+ * Returns the default network settings in the case where they are not
+ * defined in the database, or multi-site is not enabled
+ * @return stdClass
+ */
+function imsanity_get_default_multisite_settings()
+{
+	$data = new stdClass();
+	$data->imsanity_override_site = false;
+	$data->imsanity_max_height = IMSANITY_DEFAULT_MAX_HEIGHT;
+	$data->imsanity_max_width = IMSANITY_DEFAULT_MAX_WIDTH;
+	$data->imsanity_bmp_to_jpg = IMSANITY_DEFAULT_BMP_TO_JPG;
+	$data->imsanity_quality = IMSANITY_DEFAULT_QUALITY;
+	return $data;
+}
+
+/**
+ * On activation create the multisite database table if necessary.  this is 
+ * called when the plugin is activated as well as when it is automatically
+ * updated.
+ */
+function imsanity_maybe_created_custom_table()
+{
+	global $wpdb;
+	$table_name = imsanity_get_custom_table_name();
+	
+	if ( is_multisite() && !imsanity_multisite_table_exists() ) {
+
+		$sql = "CREATE TABLE IF NOT EXISTS " . $table_name . " (
+			  setting varchar(55),
+			  data tinytext NOT NULL,
+			  PRIMARY KEY (setting)
+			);";
+		
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		dbDelta($sql);
+		
+		$data = imsanity_get_default_multisite_settings();
+				
+		// initial settings are all blank
+		$rows_affected = $wpdb->insert( $table_name, array( 'setting' => 'multisite', 'data' => maybe_serialize($data) ) );
+	}
+}
+
+/**
+ * Register the network settings page
+ */
+function imsanity_register_network() 
+{
+	add_submenu_page('settings.php', 'Imsanity Network Settings', 'Imsanity', 'manage_options', 'imsanity_network', 'imsanity_network_settings');
+}
+
+/**
+ * display the form for the multi-site settings page
+ */
+function imsanity_network_settings()
+{
+	imsanity_settings_css();
+	
+	echo '
+		<div class="wrap">
+		<div id="icon-options-general" class="icon32"><br></div>
+		<h2>Imsanity Network Settings</h2>
+		';
+	
+	// we only want to update if the form has been submitted
+	if (isset($_REQUEST['update_settings']))
+	{
+		imsanity_network_settings_update();
+		echo "<div class='updated settings-error'><p><strong>Imsanity network settings saved.</strong></p></div>";
+	}
+	
+	imsanity_settings_banner();
+		
+	$settings = imsanity_get_multisite_settings();
+	
+	?>
+	
+	<form method="post" action="settings.php?page=imsanity_network">
+	<input type="hidden" name="update_settings" value="1" />
+
+	<table class="form-table">
+	<tr valign="top">
+	<th scope="row">Global Settings Override</th>
+	<td>
+		<select name="imsanity_override_site">
+			<option value="0" <?php if ($settings->imsanity_override_site == '0') echo "selected='selected'" ?> >Allow each site to configure Imsanity settings</option>
+			<option value="1" <?php if ($settings->imsanity_override_site == '1') echo "selected='selected'" ?> >Use global Imsanity settings (below) for all sites</option>
+		</select>
+	</td>
+	</tr>
+	
+	<tr valign="top">
+	<th scope="row">Max Height</th>
+	<td><input name="imsanity_max_height" value="<?php echo $settings->imsanity_max_height ?>" style="width: 45px;" /></td>
+	</tr>
+
+	<tr valign="top">
+	<th scope="row">Max Width</th>
+	<td><input name="imsanity_max_width" value="<?php echo $settings->imsanity_max_width ?>" style="width: 45px;" /></td>
+	</tr>
+
+	<tr valign="top">
+	<th scope="row">Convert BMP to JPG</th>
+	<td><select name="imsanity_bmp_to_jpg">
+		<option value="1" <?php if ($settings->imsanity_bmp_to_jpg == '1') echo "selected='selected'" ?> >Yes</option>
+		<option value="0" <?php if ($settings->imsanity_bmp_to_jpg == '0') echo "selected='selected'" ?> >No</option>
+	</select></td>
+	</tr>
+	
+	<tr valign="top">
+	<th scope="row">JPG Quality</th>
+		<td><select name="imsanity_quality">
+			<?php 
+			$q = $settings->imsanity_quality;
+			
+			for ($x = 10; $x <= 100; $x = $x + 10)
+			{
+				echo "<option". ($q == $x ? " selected='selected'" : "") .">$x</option>";
+			}
+			?>
+		</select> (WordPress default is 90)</td>
+	</tr>
+
+	</table>
+	
+	<p class="submit"><input type="submit" class="button-primary" value="Update Settings" /></p>
+
+	</form>
+	<?php
+	
+	echo '</div>';
+}
+
+/**
+ * Process the form, update the network settings 
+ * and clear the cached settings
+ */
+function imsanity_network_settings_update()
+{
+	global $wpdb;
+	global $_imsanity_multisite_settings;
+	
+	// ensure that the custom table is created when the user updates network settings
+	// this is not ideal but it's better than checking for this table existance
+	// on every page load
+	imsanity_maybe_created_custom_table();
+	
+	$table_name = imsanity_get_custom_table_name();
+	
+	$data = new stdClass();
+	$data->imsanity_override_site = $_REQUEST['imsanity_override_site'] == 1; 
+	$data->imsanity_max_height = $_REQUEST['imsanity_max_height'];
+	$data->imsanity_max_width = $_REQUEST['imsanity_max_width'];
+	$data->imsanity_bmp_to_jpg = $_REQUEST['imsanity_bmp_to_jpg'] == 1;
+	$data->imsanity_quality = $_REQUEST['imsanity_quality'];
+	
+	$wpdb->update(
+		$table_name, 
+		array('data' =>  maybe_serialize($data)), 
+		array('setting' => 'multisite')
+	);
+
+	// clear the cache
+	$_imsanity_multisite_settings = null;
+}
+
+/**
+ * Return the multi-site settings as a standard class.  If the settings are not
+ * defined in the database or multi-site is not enabled then the default settings 
+ * are returned.  This is cached so it only loads once per page load, unless 
+ * imsanity_network_settings_update is called.
+ * @return stdClass
+ */
+function imsanity_get_multisite_settings()
+{
+	global $_imsanity_multisite_settings;
+	$result = null;
+	
+	if (!$_imsanity_multisite_settings)
+	{
+		if (is_multisite())
+		{
+			global $wpdb;
+			$result = $wpdb->get_var('select data from ' . imsanity_get_custom_table_name() . " where setting = 'multisite'");
+		}
+		
+		// if there's no results, return the defaults instead
+		$_imsanity_multisite_settings = $result
+			? unserialize($result)
+			: imsanity_get_default_multisite_settings();
+	}
+	
+	return $_imsanity_multisite_settings;
+}
+
+/**
+ * Gets the option setting for the given key, first checking to see if it has been
+ * set globally for multi-site.  Otherwise checking the site options.
+ * @param string $key
+ * @param string $ifnull value to use if the requested option returns null
+ */
+function imsanity_get_option($key,$ifnull)
+{
+	$result = null;
+	
+	$settings = imsanity_get_multisite_settings();
+	
+	if ($settings->imsanity_override_site)
+	{
+		$result = $settings->$key;
+		if ($result == null) $result = $ifnull;
+	}
+	else
+	{
+		$result = get_option($key,$ifnull);
+	}
+	
+	return $result;
+	
 }
 
 /**
@@ -35,12 +300,13 @@ function imsanity_register_settings()
 }
 
 /**
- * Render the settings page by writing directly to stdout
+ * Helper function to render css styles for the settings forms
+ * for both site and network settings page
  */
-function imsanity_settings_page() 
+function imsanity_settings_css()
 {
-?>
-<style>
+	echo "
+	<style>
 	#imsanity_header
 	{
 		border: solid 1px #c6c6c6;
@@ -48,107 +314,178 @@ function imsanity_settings_page()
 		padding: 20px;
 		background-color: #e1e1e1;
 	}
-	#imsanity_header h4
-	{
+		#imsanity_header h4
+		{
 		margin: 0px 0px 0px 0px;
-	}
-	#imsanity_header tr
-	{
+		}
+		#imsanity_header tr
+		{
 		vertical-align: top;
-	}
+		}
 	
-	.imsanity_section_header
-	{
+		.imsanity_section_header
+		{
 		border: solid 1px #c6c6c6;
 		margin: 12px 2px 8px 2px;
 		padding: 20px;
 		background-color: #e1e1e1;
+		}
+	
+	</style>";
+}
+
+/**
+ * Helper function to render the settings banner 
+ * for both site and network settings page
+ */
+function imsanity_settings_banner()
+{
+	echo '
+	<div id="imsanity_header" style="float: left;">
+		<a href="http://verysimple.com/products/imsanity/"><img alt="Imsanity" src="' . plugins_url() . '/imsanity/images/imsanity.png" style="float: right; margin-left: 15px;"/></a>
+	
+		<h4>Imsanity automatically resizes insanely huge image uploads</h4>
+		
+		<p>Imsanity automaticaly reduces the size of images that are larger than the specified maximum and replaces the original
+		with one of a more "sane" size.  Site contributors don\'t need to concern themselves with manually scaling images
+		and can upload them directly from their camera or phone.</p>
+	
+		<p>The resolution of modern cameras is larger than necessary for typical web display.  
+		The average computer screen is not big enough to display a 3 megapixel camera-phone image at full resolution.
+		WordPress does a good job of creating scaled-down copies which can be used, however the original images
+		are permanently stored, taking up disk quota and, if used on a page, create a poor viewer experience.</p>
+		
+		<p>This plugin is designed for sites where high-resolution images are not necessary and/or site contributors
+		do not want (or understand how) to deal with scaling images.  This plugin should not be used on 
+		sites for which original, high-resolution images must be stored.</p>
+		
+		<p>Be sure to save back-ups of your full-sized images if you wish to keep them.</p>
+		
+		<p>Credit: Imsanity Version ' .IMSANITY_VERSION . ' by <a href="http://verysimple.com/">Jason Hinkle</a></p>
+	</div>
+	<br style="clear:both" />';
+}
+
+/**
+ * Render the settings page by writing directly to stdout.  if multi-site is enabled
+ * and imsanity_override_site is true, then display a notice message that settings
+ * are not editable instead of the settings form
+ */
+function imsanity_settings_page() 
+{
+	imsanity_settings_css();
+	
+	?>
+	<div class="wrap">
+	<div id="icon-options-general" class="icon32"><br></div>
+	<h2>Imsanity Settings</h2>
+	<?php 
+	
+	imsanity_settings_banner();
+		
+	$settings = imsanity_get_multisite_settings();
+	
+	if ($settings->imsanity_override_site)
+	{
+		imsanity_settings_page_notice();
+	}
+	else
+	{
+		imsanity_settings_page_form();
 	}
 	
-</style>
-
-<div class="wrap">
-<div id="icon-options-general" class="icon32"><br></div>
-<h2>Imsanity Settings</h2>
-
-<div id="imsanity_header" style="float: left;">
-	<a href="http://verysimple.com/products/imsanity/"><img alt="Imsanity" src="<?php echo plugins_url().'/imsanity/images/imsanity.png'; ?>" style="float: right; margin-left: 15px;"/></a>
-
-	<h4>Imsanity automatically resizes insanely huge image uploads</h4>
+	?>
+		
+	<h2 style="margin-top: 0px;">Bulk Resize Images</h2>
 	
-	<p>The resolution of modern cameras is larger than necessary for typical web display.  
-	In fact the average computer screen is not big enough to display a 3 megapixel camera-phone image at full resolution.
-	WordPress does a good job of creating scaled-down copies which can be used, however the original images
-	are permanently stored and the average contributor may not understand how to use the scaled images
-	in their posts.  These images take up disk quota and, if used on a page, will use bandwidth and slow load times.</p>
+	<div id="imsanity_header">
+	<p>If you have existing images that were uploaded prior to installing Imsanity, you may resize them
+	all in bulk to recover disk space.  To begin, click the "Search Images" button to search all existing
+	attachments for images that are larger than the configured limit.</p>
+	<p>Limitations: For performance reasons a maximum of 250 images will be returned at one time.  Bitmap
+	image types are not supported and will not appear in the search results.</p>
+	</div>
+
+	<div style="border: solid 1px #ff6666; background-color: #ffbbbb; padding: 8px;">
+	WARNING: Bulk Resize is a BETA feature.  It is highly recommended that you backup your wp-content/uploads
+	folder before proceeding.  You will have a chance to preview and select the images to convert, so
+	it is suggested that you select only 1 or 2 images and then verify that everything is ok before
+	processing your entire library.  You have been warned!
+	</div>
 	
-	<p>Imsanity automaticaly reduces the size of images that are larger than the specified maximum and replaces the original
-	with one of a more "sane" size.  Site contributors don't need to concern themselves with manually scaling images
-	and can upload them directly from their camera or phone.</p>
+	<p class="submit" id="imsanity-examine-button">
+		<button class="button-primary" onclick="imsanity_load_images('imsanity_image_list');">Search Images...</button>
+	</p>
+	<div id='imsanity_image_list'></div>
 	
-	<p>This plugin is designed for sites where high-resolution images are not necessary and/or the site contributors
-	do not want (or understand how) to deal with scaling their images.  This plugin should not be used on 
-	sites for which original, high-resolution images must be stored.</p>
+	<?php 
+
+	echo '</div>';
 	
-	<p>Beware - This is a destructive plugin!  Be sure to keep back-ups of your full-sized images.</p>
-</div>
+}
 
-<br style="clear:both" />
+/**
+ * Multi-user config file exists so display a notice
+ */
+function imsanity_settings_page_notice()
+{
+	?>
+	<div class="updated settings-error">
+	<p><strong>Imsanity settings have been configured by the server administrator.  There are no site-specific settings available.</strong></p>
+	</div>
+	
+	<?php 
+}
 
-<form method="post" action="options.php">
+/**
+* Render the site settings form.  This is processed by
+* WordPress built-in options persistance mechanism
+*/
+function imsanity_settings_page_form() 
+{
+	?>
+	<form method="post" action="options.php">
 
-    <?php settings_fields( 'imsanity-settings-group' ); ?>
-    <table class="form-table">
-        <tr valign="top">
-        <th scope="row">Maximum Image Width</th>
-        <td><input type="text" style="width:40px;" name="imsanity_max_width" value="<?php echo get_option('imsanity_max_width',IMSANITY_DEFAULT_MAX_WIDTH); ?>" /> (Enter 0 to disable)</td>
-        </tr>
+	<?php settings_fields( 'imsanity-settings-group' ); ?>
+		<table class="form-table">
+		<tr valign="top">
+		<th scope="row">Maximum Image Width</th>
+		<td><input type="text" style="width:40px;" name="imsanity_max_width" value="<?php echo get_option('imsanity_max_width',IMSANITY_DEFAULT_MAX_WIDTH); ?>" /> (Enter 0 to disable)</td>
+		</tr>
 
-        <tr valign="top">
-        <th scope="row">Maximum Image Height</th>
-        <td><input type="text" style="width:40px;" name="imsanity_max_height" value="<?php echo get_option('imsanity_max_height',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> (Enter 0 to disable)</td>
-        </tr>
+		<tr valign="top">
+		<th scope="row">Maximum Image Height</th>
+		<td><input type="text" style="width:40px;" name="imsanity_max_height" value="<?php echo get_option('imsanity_max_height',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> (Enter 0 to disable)</td>
+		</tr>
 
-        <tr valign="top">
-        <th scope="row">JPG Image Quality</th>
-        <td><select name="imsanity_quality">
-        	<?php 
-        	$q = get_option('imsanity_quality',IMSANITY_DEFAULT_QUALITY);
-        	
-        	for ($x = 10; $x <= 100; $x = $x + 10)
-        	{
-        		echo "<option". ($q == $x ? " selected='selected'" : "") .">$x</option>";
-        	}
-        	?>
-        </select> (WordPress default is 90)</td>
-        </tr>
+		<tr valign="top">
+		<th scope="row">JPG Image Quality</th>
+		<td><select name="imsanity_quality">
+			<?php 
+			$q = get_option('imsanity_quality',IMSANITY_DEFAULT_QUALITY);
+			
+			for ($x = 10; $x <= 100; $x = $x + 10)
+			{
+				echo "<option". ($q == $x ? " selected='selected'" : "") .">$x</option>";
+			}
+			?>
+		</select> (WordPress default is 90)</td>
+		</tr>
 
-        <tr valign="top">
-        <th scope="row">Convert BMP To JPG</th>
-        <td><select name="imsanity_bmp_to_jpg">
-        	<option <?php if (get_option('imsanity_bmp_to_jpg',IMSANITY_DEFAULT_BMP_TO_JPG) == "1") {echo "selected='selected'";} ?> value="1">Yes</option>
-        	<option <?php if (get_option('imsanity_bmp_to_jpg',IMSANITY_DEFAULT_BMP_TO_JPG) == "0") {echo "selected='selected'";} ?> value="0">No</option>
-        </select></td>
-        </tr>
+		<tr valign="top">
+		<th scope="row">Convert BMP To JPG</th>
+		<td><select name="imsanity_bmp_to_jpg">
+			<option <?php if (get_option('imsanity_bmp_to_jpg',IMSANITY_DEFAULT_BMP_TO_JPG) == "1") {echo "selected='selected'";} ?> value="1">Yes</option>
+			<option <?php if (get_option('imsanity_bmp_to_jpg',IMSANITY_DEFAULT_BMP_TO_JPG) == "0") {echo "selected='selected'";} ?> value="0">No</option>
+		</select></td>
+		</tr>
 
-        <tr valign="top">
-        <th scope="row">Info</th>
-        <td>
-        	<div>Imsanity Version <?php echo IMSANITY_VERSION; ?></div>
-        	<div>Imsanity designed and developed by <a href="http://verysimple.com/">Jason Hinkle</a></div>
-        </td>
-        </tr>
-
-    </table>
-    
-    <p class="submit">
-    <input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />
-    </p>
-
-</form>
-</div>
-
-<?php 
+	</table>
+	
+	<p class="submit"><input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" /></p>
+	
+	</form>
+	<?php 
 
 }
 
