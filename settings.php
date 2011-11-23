@@ -66,6 +66,24 @@ function imsanity_multisite_table_exists()
 }
 
 /**
+* Return true if the multi-site settings table exists
+* @return bool
+*/
+function imsanity_multisite_table_schema_version()
+{
+	// if the table doesn't exist then there is no schema to report
+	if (!imsanity_multisite_table_exists()) return '0';
+	
+	global $wpdb;
+	$version = $wpdb->get_var('select data from ' . imsanity_get_custom_table_name() . " where setting = 'schema'");
+	
+	if (!$version) $version = '1.0'; // this is a legacy version 1.0 installation
+	
+	return $version;
+
+}
+
+/**
  * Returns the default network settings in the case where they are not
  * defined in the database, or multi-site is not enabled
  * @return stdClass
@@ -76,37 +94,75 @@ function imsanity_get_default_multisite_settings()
 	$data->imsanity_override_site = false;
 	$data->imsanity_max_height = IMSANITY_DEFAULT_MAX_HEIGHT;
 	$data->imsanity_max_width = IMSANITY_DEFAULT_MAX_WIDTH;
+	$data->imsanity_max_height_library = IMSANITY_DEFAULT_MAX_HEIGHT;
+	$data->imsanity_max_width_library = IMSANITY_DEFAULT_MAX_WIDTH;
+	$data->imsanity_max_height_other = IMSANITY_DEFAULT_MAX_HEIGHT;
+	$data->imsanity_max_width_other = IMSANITY_DEFAULT_MAX_WIDTH;
 	$data->imsanity_bmp_to_jpg = IMSANITY_DEFAULT_BMP_TO_JPG;
 	$data->imsanity_quality = IMSANITY_DEFAULT_QUALITY;
 	return $data;
 }
 
+
 /**
  * On activation create the multisite database table if necessary.  this is 
  * called when the plugin is activated as well as when it is automatically
  * updated.
+ * 
+ * @param bool set to true to force the query to run in the case of an upgrade
  */
 function imsanity_maybe_created_custom_table()
 {
+	// if not a multi-site no need to do any custom table lookups
+	if (!is_multisite()) return;
+	
 	global $wpdb;
+	
+	$schema = imsanity_multisite_table_schema_version();
 	$table_name = imsanity_get_custom_table_name();
 	
-	if ( is_multisite() && !imsanity_multisite_table_exists() ) {
-
+	if ($schema == '0')
+	{
+		// this is an initial database setup
 		$sql = "CREATE TABLE IF NOT EXISTS " . $table_name . " (
-			  setting varchar(55),
-			  data tinytext NOT NULL,
-			  PRIMARY KEY (setting)
-			);";
+					  setting varchar(55),
+					  data text NOT NULL,
+					  PRIMARY KEY (setting)
+					);";
 		
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
-		
 		$data = imsanity_get_default_multisite_settings();
 				
-		// initial settings are all blank
-		$rows_affected = $wpdb->insert( $table_name, array( 'setting' => 'multisite', 'data' => maybe_serialize($data) ) );
+		// add the rows to the database
+		$data = imsanity_get_default_multisite_settings();
+		$wpdb->insert( $table_name, array( 'setting' => 'multisite', 'data' => maybe_serialize($data) ) );
+		$wpdb->insert( $table_name, array( 'setting' => 'schema', 'data' => IMSANITY_SCHEMA_VERSION ) );
 	}
+	
+	if ($schema != IMSANITY_SCHEMA_VERSION)
+	{
+		// this is a schema update.  for the moment there is only one schema update available, from 1.0 to 1.1
+		if ($schema == '1.0')
+		{
+			// update from version 1.0 to 1.1
+			$wpdb->insert( $table_name, array( 'setting' => 'schema', 'data' => IMSANITY_SCHEMA_VERSION ) );
+			$update1 = "ALTER TABLE " . $table_name . " CHANGE COLUMN data data TEXT NOT NULL;";
+			$wpdb->query($update1);
+		}
+		else
+		{
+			// @todo we don't have this yet
+			$wpdb->update(
+				$table_name,
+				array('data' =>  IMSANITY_SCHEMA_VERSION),
+				array('setting' => 'schema')
+			);
+		}
+		
+	}
+
+	
 }
 
 /**
@@ -158,13 +214,27 @@ function imsanity_network_settings()
 	</tr>
 	
 	<tr valign="top">
-	<th scope="row">Max Height</th>
-	<td><input name="imsanity_max_height" value="<?php echo $settings->imsanity_max_height ?>" style="width: 45px;" /></td>
+	<th scope="row">Max width/height for images uploaded within a Page/Post</th>
+	<td>
+		<input name="imsanity_max_height" value="<?php echo $settings->imsanity_max_height ?>" style="width: 45px;" />
+		/ <input name="imsanity_max_width" value="<?php echo $settings->imsanity_max_width ?>" style="width: 45px;" /> (Enter 0 to disable)
+	</td>
 	</tr>
-
+	
 	<tr valign="top">
-	<th scope="row">Max Width</th>
-	<td><input name="imsanity_max_width" value="<?php echo $settings->imsanity_max_width ?>" style="width: 45px;" /></td>
+	<th scope="row">Max width/height for images uploaded directly to the Media Library</th>
+	<td>
+		<input name="imsanity_max_height_library" value="<?php echo $settings->imsanity_max_height_library ?>" style="width: 45px;" />
+		/ <input name="imsanity_max_width_library" value="<?php echo $settings->imsanity_max_width_library ?>" style="width: 45px;" /> (Enter 0 to disable)
+	</td>
+	</tr>
+	
+	<tr valign="top">
+	<th scope="row">Max width/height for images uploaded elsewhere (Theme headers, backgrounds, logos, etc)</th>
+	<td>
+		<input name="imsanity_max_height_other" value="<?php echo $settings->imsanity_max_height_other ?>" style="width: 45px;" />
+		/ <input name="imsanity_max_width_other" value="<?php echo $settings->imsanity_max_width_other ?>" style="width: 45px;" /> (Enter 0 to disable)
+	</td>
 	</tr>
 
 	<tr valign="top">
@@ -219,6 +289,10 @@ function imsanity_network_settings_update()
 	$data->imsanity_override_site = $_REQUEST['imsanity_override_site'] == 1; 
 	$data->imsanity_max_height = $_REQUEST['imsanity_max_height'];
 	$data->imsanity_max_width = $_REQUEST['imsanity_max_width'];
+	$data->imsanity_max_height_library = $_REQUEST['imsanity_max_height_library'];
+	$data->imsanity_max_width_library = $_REQUEST['imsanity_max_width_library'];
+	$data->imsanity_max_height_other = $_REQUEST['imsanity_max_height_other'];
+	$data->imsanity_max_width_other = $_REQUEST['imsanity_max_width_other'];
 	$data->imsanity_bmp_to_jpg = $_REQUEST['imsanity_bmp_to_jpg'] == 1;
 	$data->imsanity_quality = $_REQUEST['imsanity_quality'];
 	
@@ -249,6 +323,7 @@ function imsanity_get_multisite_settings()
 		if (is_multisite())
 		{
 			global $wpdb;
+			
 			$result = $wpdb->get_var('select data from ' . imsanity_get_custom_table_name() . " where setting = 'multisite'");
 		}
 		
@@ -256,6 +331,16 @@ function imsanity_get_multisite_settings()
 		$_imsanity_multisite_settings = $result
 			? unserialize($result)
 			: imsanity_get_default_multisite_settings();
+
+		// this is for backwards compatibility
+		if ($_imsanity_multisite_settings->imsanity_max_height_library == '')
+		{
+			$_imsanity_multisite_settings->imsanity_max_height_library = $_imsanity_multisite_settings->imsanity_max_height;
+			$_imsanity_multisite_settings->imsanity_max_width_library = $_imsanity_multisite_settings->imsanity_max_width;
+			$_imsanity_multisite_settings->imsanity_max_height_other = $_imsanity_multisite_settings->imsanity_max_height;
+			$_imsanity_multisite_settings->imsanity_max_width_other = $_imsanity_multisite_settings->imsanity_max_width;
+		}
+		
 	}
 	
 	return $_imsanity_multisite_settings;
@@ -295,6 +380,10 @@ function imsanity_register_settings()
 	//register our settings
 	register_setting( 'imsanity-settings-group', 'imsanity_max_height' );
 	register_setting( 'imsanity-settings-group', 'imsanity_max_width' );
+	register_setting( 'imsanity-settings-group', 'imsanity_max_height_library' );
+	register_setting( 'imsanity-settings-group', 'imsanity_max_width_library' );
+	register_setting( 'imsanity-settings-group', 'imsanity_max_height_other' );
+	register_setting( 'imsanity-settings-group', 'imsanity_max_width_other' );
 	register_setting( 'imsanity-settings-group', 'imsanity_bmp_to_jpg' );
 	register_setting( 'imsanity-settings-group', 'imsanity_quality' );
 }
@@ -448,18 +537,28 @@ function imsanity_settings_page_form()
 
 	<?php settings_fields( 'imsanity-settings-group' ); ?>
 		<table class="form-table">
+		
 		<tr valign="top">
-		<th scope="row">Maximum Image Width</th>
-		<td><input type="text" style="width:40px;" name="imsanity_max_width" value="<?php echo get_option('imsanity_max_width',IMSANITY_DEFAULT_MAX_WIDTH); ?>" /> (Enter 0 to disable)</td>
+		<th scope="row">Max width/height for images uploaded within a Page/Post</th>
+		<td><input type="text" style="width:40px;" name="imsanity_max_width" value="<?php echo get_option('imsanity_max_width',IMSANITY_DEFAULT_MAX_WIDTH); ?>" />
+		/ <input type="text" style="width:40px;" name="imsanity_max_height" value="<?php echo get_option('imsanity_max_height',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> (Enter 0 to disable)</td>
 		</tr>
 
 		<tr valign="top">
-		<th scope="row">Maximum Image Height</th>
-		<td><input type="text" style="width:40px;" name="imsanity_max_height" value="<?php echo get_option('imsanity_max_height',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> (Enter 0 to disable)</td>
+		<th scope="row">Max width/height for images uploaded directly to the Media Library</th>
+		<td><input type="text" style="width:40px;" name="imsanity_max_width_library" value="<?php echo get_option('imsanity_max_width_library',IMSANITY_DEFAULT_MAX_WIDTH); ?>" />
+		/ <input type="text" style="width:40px;" name="imsanity_max_height_library" value="<?php echo get_option('imsanity_max_height_library',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> (Enter 0 to disable)</td>
 		</tr>
 
 		<tr valign="top">
-		<th scope="row">JPG Image Quality</th>
+		<th scope="row">Max width/height for images uploaded elsewhere (Theme headers, backgrounds, logos, etc)</th>
+		<td><input type="text" style="width:40px;" name="imsanity_max_width_other" value="<?php echo get_option('imsanity_max_width_other',IMSANITY_DEFAULT_MAX_WIDTH); ?>" />
+		/ <input type="text" style="width:40px;" name="imsanity_max_height_other" value="<?php echo get_option('imsanity_max_height_other',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> (Enter 0 to disable)</td>
+		</tr>
+
+
+		<tr valign="top">
+		<th scope="row">JPG image quality</th>
 		<td><select name="imsanity_quality">
 			<?php 
 			$q = get_option('imsanity_quality',IMSANITY_DEFAULT_QUALITY);

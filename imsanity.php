@@ -4,15 +4,21 @@ Plugin Name: Imsanity
 Plugin URI: http://verysimple.com/products/imsanity/
 Description: Imsanity stops insanely huge image uploads
 Author: Jason Hinkle
-Version: 2.0.0
+Version: 2.1.0
 Author URI: http://verysimple.com/
 */
 
-define('IMSANITY_VERSION','2.0.0');
+define('IMSANITY_VERSION','2.1.0');
+define('IMSANITY_SCHEMA_VERSION','1.1');
+
 define('IMSANITY_DEFAULT_MAX_WIDTH',1024);
 define('IMSANITY_DEFAULT_MAX_HEIGHT',1024);
 define('IMSANITY_DEFAULT_BMP_TO_JPG',1);
 define('IMSANITY_DEFAULT_QUALITY',90);
+
+define('IMSANITY_SOURCE_POST',1);
+define('IMSANITY_SOURCE_LIBRARY',2);
+define('IMSANITY_SOURCE_OTHER',4);
 
 /**
  * import supporting libraries
@@ -21,6 +27,44 @@ include_once(plugin_dir_path(__FILE__).'libs/utils.php');
 include_once(plugin_dir_path(__FILE__).'settings.php');
 include_once(plugin_dir_path(__FILE__).'ajax.php');
 
+/**
+ * Inspects the request and determines where the upload came from
+ * @return IMSANITY_SOURCE_POST | IMSANITY_SOURCE_LIBRARY | IMSANITY_SOURCE_OTHER
+ */
+function imsanity_get_source()
+{
+	return array_key_exists('post_id', $_REQUEST) 
+		?  ($_REQUEST['post_id'] == 0 ? IMSANITY_SOURCE_LIBRARY : IMSANITY_SOURCE_POST)
+		: IMSANITY_SOURCE_OTHER;
+}
+
+/**
+ * Given the source, returns the max width/height
+ * 
+ * @example:  list($w,$h) = imsanity_get_max_width_height(IMSANITY_SOURCE_LIBRARY);
+ * @param int IMSANITY_SOURCE_POST | IMSANITY_SOURCE_LIBRARY | IMSANITY_SOURCE_OTHER
+ */
+function imsanity_get_max_width_height($source)
+{
+	$w = imsanity_get_option('imsanity_max_width',IMSANITY_DEFAULT_MAX_WIDTH);
+	$h = imsanity_get_option('imsanity_max_height',IMSANITY_DEFAULT_MAX_HEIGHT);
+	
+	switch ($source)
+	{
+		case IMSANITY_SOURCE_POST:
+			break;
+		case IMSANITY_SOURCE_LIBRARY:
+			$w = imsanity_get_option('imsanity_max_width_library',$w);
+			$h = imsanity_get_option('imsanity_max_height_library',$h);
+			break;
+		default:
+			$w = imsanity_get_option('imsanity_max_width_other',$w);
+			$h = imsanity_get_option('imsanity_max_height_other',$h);
+			break;
+	}
+	
+	return array($w,$h);
+}
 
 /**
  * Handler after a file has been uploaded.  If the file is an image, check the size
@@ -44,8 +88,10 @@ function imsanity_handle_upload($params)
 	{
 		$oldPath = $params['file'];
 		
-		$maxW = imsanity_get_option('imsanity_max_width',IMSANITY_DEFAULT_MAX_WIDTH);
-		$maxH = imsanity_get_option('imsanity_max_height',IMSANITY_DEFAULT_MAX_HEIGHT);
+		// figure out where the upload is coming from
+		$source = imsanity_get_source();
+		
+		list($maxW,$maxH) = imsanity_get_max_width_height($source);
 		
 		list($oldW, $oldH) = getimagesize( $oldPath );
 		
@@ -58,7 +104,7 @@ function imsanity_handle_upload($params)
 			$resizeResult = image_resize( $oldPath, $newW, $newH, false, null, null, $quality);
 			
 			/* uncomment to debug error handling code: */
-			// $resizeResult = new WP_Error('invalid_image', __('Could not read image size'), $oldPath);
+			// $resizeResult = new WP_Error('invalid_image', __(print_r($_REQUEST)), $oldPath);
 			
 			// regardless of success/fail we're going to remove the original upload
 			unlink($oldPath);
@@ -135,12 +181,11 @@ function imsanity_bmp_to_jpg($params)
 	return $params;
 }
 
-
+/* add filters to hook into uploads */
 add_filter( 'wp_handle_upload', 'imsanity_handle_upload' );
 
 
 // TODO: if necessary to update the post data in the future...
 // add_filter( 'wp_update_attachment_metadata', 'imsanity_handle_update_attachment_metadata' );
-
 
 ?>

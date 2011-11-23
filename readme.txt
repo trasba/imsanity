@@ -11,21 +11,23 @@ huge photos?  Tired of manually scaling?  Imsanity to the rescue.
 
 == Description ==
 
-Imsanity automatically resizes insanely huge image uploads down to a size that is
+Imsanity automatically resizes  huge image uploads down to a size that is
 more reasonable for display in browser, yet still more than large enough for typical website use.
 The plugin is configurable with a max width, height and quality.  When a contributor uploads an
 image that is larger than the configured size, Imsanity will automatically scale it down to the 
 configured size remove the original image.
 
-Imsanity also handles bitmap images which WordPress is normally unable to scale.
+Imsanity also provides a bulk-resize feature to selectively resize previously uploaded images
+to free up disk space.
 
-This is the perfect plugin for blogs that do not require hi-resolution original images
+This plugin is ideal for blogs that do not require hi-resolution original images
 to be stored and/or the contributors don't want (or understand how) to scale images
 before uploading.
 
 = Features =
 
 * Automatically scales large image uploads to a more "sane" size
+* Bulk-resize feature to selectively resize existing images
 * Allows configuration of max width/height and jpg quality
 * Optionally converts BMP files to JPG so image can be scaled
 * Once enabled, Imsanity requires no actions on the part of the user
@@ -112,11 +114,13 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Upgrade Notice ==
 
-= 2.0.0 =
-* added network configuration for multi-site installation to enforce server-wide settings
-* added "bulk resize" feature to resize existing images and recover disk space
+= 2.1.0 =
+* max height/width can be configured separately for different upload types
 
 == Changelog ==
+
+= 2.1.0 =
+* max height/width can be configured separately for different upload types
 
 = 2.0.0 =
 * added network configuration for multi-site installation to enforce server-wide settings
