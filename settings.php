@@ -45,13 +45,13 @@ function imsanity_create_menu()
 // add_action( 'admin_menu', 'dm_add_pages' );
 
 /**
- * Returns the name of the custom multi-site settings table
- * Enter description here ...
+ * Returns the name of the custom multi-site settings table.
+ * this will be the same table regardless of the blog
  */
 function imsanity_get_custom_table_name()
 {
-	global $wpdb;
-	return $wpdb->prefix . "imsanity";
+	global $table_prefix; // defined in wp-config.php
+	return $table_prefix . "imsanity";
 }
 
 /**

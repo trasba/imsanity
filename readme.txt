@@ -114,10 +114,13 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Upgrade Notice ==
 
-= 2.1.0 =
-* max height/width can be configured separately for different upload types
+= 2.1.1 =
+* fixed bug w/ multisite network settings only working on main site
 
 == Changelog ==
+
+= 2.1.1 =
+* fixed bug w/ multisite network settings only working on main site
 
 = 2.1.0 =
 * max height/width can be configured separately for different upload types
