@@ -50,8 +50,10 @@ function imsanity_create_menu()
  */
 function imsanity_get_custom_table_name()
 {
-	global $table_prefix; // defined in wp-config.php
-	return $table_prefix . "imsanity";
+	global $wpdb;
+	
+	// passing in zero seems to return $wpdb->base_prefix, which is not public
+	return $wpdb->get_blog_prefix(0) . "imsanity";
 }
 
 /**

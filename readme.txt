@@ -114,10 +114,13 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Upgrade Notice ==
 
-= 2.1.1 =
-* fixed bug w/ multisite network settings only working on main site
+= 2.1.2 =
+* really fixed bug w/ multisite network settings only working on main site
 
 == Changelog ==
+
+= 2.1.2 =
+* really fixed bug w/ multisite network settings only working on main site
 
 = 2.1.1 =
 * fixed bug w/ multisite network settings only working on main site
