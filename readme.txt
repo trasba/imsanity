@@ -114,10 +114,13 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Upgrade Notice ==
 
-= 2.1.2 =
-* really fixed bug w/ multisite network settings only working on main site
+= 2.1.3 =
+* fixed issue where only first 250 images could be re-sized in bulk-resize feature
 
 == Changelog ==
+
+= 2.1.3 =
+* fixed issue where only first 250 images could be re-sized in bulk-resize feature
 
 = 2.1.2 =
 * really fixed bug w/ multisite network settings only working on main site
