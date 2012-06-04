@@ -114,10 +114,13 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Upgrade Notice ==
 
-= 2.1.4 =
-* fixed crash when uploading images via Android app via RPC (thanks Pieter!)
+= 2.1.5 =
+* fixed undefined error in setup.php
 
 == Changelog ==
+
+= 2.1.5 =
+* fixed undefined error in setup.php
 
 = 2.1.4 =
 * fixed crash when uploading images via Android app via RPC (thanks Pieter!)
