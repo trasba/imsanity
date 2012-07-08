@@ -4,11 +4,11 @@ Plugin Name: Imsanity
 Plugin URI: http://verysimple.com/products/imsanity/
 Description: Imsanity stops insanely huge image uploads
 Author: Jason Hinkle
-Version: 2.1.5
+Version: 2.1.6
 Author URI: http://verysimple.com/
 */
 
-define('IMSANITY_VERSION','2.1.5');
+define('IMSANITY_VERSION','2.1.6');
 define('IMSANITY_SCHEMA_VERSION','1.1');
 
 define('IMSANITY_DEFAULT_MAX_WIDTH',1024);
@@ -21,11 +21,17 @@ define('IMSANITY_SOURCE_LIBRARY',2);
 define('IMSANITY_SOURCE_OTHER',4);
 
 /**
+ * Load Translations
+ */
+load_plugin_textdomain('imsanity', false, 'imsanity/languages/');
+
+/**
  * import supporting libraries
  */
 include_once(plugin_dir_path(__FILE__).'libs/utils.php');
 include_once(plugin_dir_path(__FILE__).'settings.php');
 include_once(plugin_dir_path(__FILE__).'ajax.php');
+
 
 /**
  * Inspects the request and determines where the upload came from
@@ -121,11 +127,12 @@ function imsanity_handle_upload($params)
 			else
 			{
 				// resize didn't work, likely because the image processing libraries are missing
-				$params = wp_handle_upload_error( $oldPath , "Oh Snap! Imsanity was unable to resize this image "
-					. "for the following reason: '" . $resizeResult->get_error_message() . "'
+				$params = wp_handle_upload_error( $oldPath ,
+					sprintf( __("Oh Snap! Imsanity was unable to resize this image "
+					. "for the following reason: '%s'
 					.  If you continue to see this error message, you may need to either install missing server"
 					. " components or disable the Imsanity plugin."
-					. "  If you think you have discovered a bug, please report it on the Imsanity support forum." );
+					. "  If you think you have discovered a bug, please report it on the Imsanity support forum.", 'imsanity' ) ,$resizeResult->get_error_message() ) );
 
 			}
 		}
@@ -175,9 +182,9 @@ function imsanity_bmp_to_jpg($params)
 		unlink($params['file']);
 
 		return wp_handle_upload_error( $oldPath,
-			"Oh Snap! Imsanity was Unable to process the BMP file.  "
+			__("Oh Snap! Imsanity was Unable to process the BMP file.  "
 			."If you continue to see this error you may need to disable the BMP-To-JPG "
-			."feature in Imsanity settings.");
+			."feature in Imsanity settings.", 'imsanity' ) );
 	}
 
 	return $params;
