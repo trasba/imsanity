@@ -3,7 +3,7 @@ Contributors: verysimple
 Donate link: http://verysimple.com/products/imsanity/
 Tags: imsanity, image, images, automatic scale, automatic resize, image resizer, image scaler, automatic image resizer, auto image resize, auto image resizer, space saver, image shrinker, image skruncher, image cruncher
 Requires at least: 2.9
-Tested up to: 3.4.1
+Tested up to: 3.6
 Stable tag: trunk
 
 Imsanity automatically resizes huge image uploads.  Are contributors uploading
@@ -114,10 +114,13 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Upgrade Notice ==
 
-= 2.1.6 =
-* internationalization support & French translation thanks to https://twitter.com/ChrysMTP
+= 2.1.7 =
+* fixed call to is_multisite() on < wordpress < 3.0
 
 == Changelog ==
+
+= 2.1.7 =
+* fixed call to is_multisite() on < wordpress < 3.0
 
 = 2.1.6 =
 * internationalization support & French translation thanks to https://twitter.com/ChrysMTP

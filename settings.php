@@ -116,7 +116,7 @@ function imsanity_get_default_multisite_settings()
 function imsanity_maybe_created_custom_table()
 {
 	// if not a multi-site no need to do any custom table lookups
-	if (!is_multisite()) return;
+	if ( (!function_exists("is_multisite")) || (!is_multisite()) ) return;
 
 	global $wpdb;
 
@@ -322,7 +322,7 @@ function imsanity_get_multisite_settings()
 
 	if (!$_imsanity_multisite_settings)
 	{
-		if (is_multisite())
+		if (function_exists("is_multisite") && is_multisite())
 		{
 			global $wpdb;
 
