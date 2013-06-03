@@ -114,10 +114,13 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Upgrade Notice ==
 
-= 2.2.0 =
-* removed deprecated call to image_resize() on < wordpress > 3.5
+= 2.2.1 =
+* removed deprecated call to image_resize() in bulk resize
 
 == Changelog ==
+
+= 2.2.1 =
+* removed deprecated call to image_resize() in bulk resize
 
 = 2.2.0 =
 * removed deprecated call to image_resize() on < wordpress > 3.5

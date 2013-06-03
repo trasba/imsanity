@@ -4,11 +4,11 @@ Plugin Name: Imsanity
 Plugin URI: http://verysimple.com/products/imsanity/
 Description: Imsanity stops insanely huge image uploads
 Author: Jason Hinkle
-Version: 2.2.0
+Version: 2.2.1
 Author URI: http://verysimple.com/
 */
 
-define('IMSANITY_VERSION','2.2.0');
+define('IMSANITY_VERSION','2.2.1');
 define('IMSANITY_SCHEMA_VERSION','1.1');
 
 define('IMSANITY_DEFAULT_MAX_WIDTH',1024);
@@ -109,37 +109,8 @@ function imsanity_handle_upload($params)
 
 			list($newW, $newH) = wp_constrain_dimensions($oldW, $oldH, $maxW, $maxH);
 
-			if (function_exists("wp_get_image_editor"))
-			{
-				// this is wordpress 3.5 or higher
-				$editor = wp_get_image_editor( $oldPath );
-				
-				if ( is_wp_error( $editor ) ) 
-				{
-					$resizeResult = $editor;
-				}
-				else
-				{
-					$editor->set_quality( $quality );
-					$resized = $editor->resize( $newW, $newH, false );
-					
-					if ( is_wp_error( $resized ) )
-					{
-						$resizeResult = $resized;
-					}
-					else
-					{
-						$dest_file = $editor->generate_filename( null, null );
-						$saved = $editor->save( $dest_file );
-						$resizeResult = is_wp_error( $saved ) ? $saved : $dest_file;
-					}
-				}
-			}
-			else
-			{
-				// this is wordpress prior to 3.5 (image_resize deprecated as of 3.5)
-				$resizeResult = image_resize( $oldPath, $newW, $newH, false, null, null, $quality);
-			}
+			// this is wordpress prior to 3.5 (image_resize deprecated as of 3.5)
+			$resizeResult = imsanity_image_resize( $oldPath, $newW, $newH, false, null, null, $quality);
 
 			/* uncomment to debug error handling code: */
 			// $resizeResult = new WP_Error('invalid_image', __(print_r($_REQUEST)), $oldPath);

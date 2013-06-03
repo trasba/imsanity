@@ -139,7 +139,7 @@ function imsanity_resize_image()
 
 			list($newW, $newH) = wp_constrain_dimensions($oldW, $oldH, $maxW, $maxH);
 
-			$resizeResult = image_resize( $oldPath, $newW, $newH, false, null, null, $quality);
+			$resizeResult = imsanity_image_resize( $oldPath, $newW, $newH, false, null, null, $quality);
 			// $resizeResult = new WP_Error('invalid_image', __('Could not read image size'), $oldPath);  // uncommend to debug fail condition
 
 			if (!is_wp_error($resizeResult))
