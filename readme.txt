@@ -114,10 +114,13 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Upgrade Notice ==
 
-= 2.1.7 =
-* fixed call to is_multisite() on < wordpress < 3.0
+= 2.2.0 =
+* removed deprecated call to image_resize() on < wordpress > 3.5
 
 == Changelog ==
+
+= 2.2.0 =
+* removed deprecated call to image_resize() on < wordpress > 3.5
 
 = 2.1.7 =
 * fixed call to is_multisite() on < wordpress < 3.0
