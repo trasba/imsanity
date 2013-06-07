@@ -70,7 +70,7 @@ function imsanity_image_resize( $file, $max_w, $max_h, $crop = false, $suffix = 
 	else
 	{
 		// wordpress prior to 3.5 uses the old image_resize function
-		image_resize( $file, $max_w, $max_h, $crop, $suffix, $dest_path, $jpeg_quality);
+		return image_resize( $file, $max_w, $max_h, $crop, $suffix, $dest_path, $jpeg_quality);
 	}
 }
 
