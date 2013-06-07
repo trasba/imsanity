@@ -46,22 +46,32 @@ function imsanity_fatal($message, $title = "", $die = false)
  */
 function imsanity_image_resize( $file, $max_w, $max_h, $crop = false, $suffix = null, $dest_path = null, $jpeg_quality = 90 ) {
 
-	$editor = wp_get_image_editor( $file );
-	if ( is_wp_error( $editor ) )
-		return $editor;
-	$editor->set_quality( $jpeg_quality );
-
-	$resized = $editor->resize( $max_w, $max_h, $crop );
-	if ( is_wp_error( $resized ) )
-		return $resized;
-
-	$dest_file = $editor->generate_filename( $suffix, $dest_path );
-	$saved = $editor->save( $dest_file );
-
-	if ( is_wp_error( $saved ) )
-		return $saved;
-
-	return $dest_file;
+	if (function_exists('wp_get_image_editor'))
+	{
+		// WP 3.5 and up use the image editor
+		
+		$editor = wp_get_image_editor( $file );
+		if ( is_wp_error( $editor ) )
+			return $editor;
+		$editor->set_quality( $jpeg_quality );
+	
+		$resized = $editor->resize( $max_w, $max_h, $crop );
+		if ( is_wp_error( $resized ) )
+			return $resized;
+	
+		$dest_file = $editor->generate_filename( $suffix, $dest_path );
+		$saved = $editor->save( $dest_file );
+	
+		if ( is_wp_error( $saved ) )
+			return $saved;
+	
+		return $dest_file;
+	}
+	else
+	{
+		// wordpress prior to 3.5 uses the old image_resize function
+		image_resize( $file, $max_w, $max_h, $crop, $suffix, $dest_path, $jpeg_quality);
+	}
 }
 
 ?>
