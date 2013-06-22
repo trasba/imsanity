@@ -469,7 +469,7 @@ function imsanity_settings_page()
 	?>
 	<div class="wrap">
 	<div id="icon-options-general" class="icon32"><br></div>
-	<h2><? _e("Imsanity Settings",'imsanity'); ?></h2>
+	<h2><?php _e("Imsanity Settings",'imsanity'); ?></h2>
 	<?php
 
 	imsanity_settings_banner();
