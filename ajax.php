@@ -196,7 +196,7 @@ function imsanity_resize_image()
 function imsanity_admin_javascript()
 {
 	echo "<script type=\"text/javascript\">var imsanity_plugin_url = '".plugins_url()."/imsanity';</script>\n";
-	echo "<script type=\"text/javascript\" src=\"".plugins_url()."/imsanity/scripts/imsanity.js\" ></script>\n";
+	echo "<script type=\"text/javascript\" src=\"".plugins_url()."/imsanity/scripts/imsanity.js?v=2\" ></script>\n";
 }
 
 ?>

@@ -7,11 +7,11 @@ Tested up to: 3.6
 Stable tag: trunk
 
 Imsanity automatically resizes huge image uploads.  Are contributors uploading
-huge photos?  Tired of manually scaling?  Imsanity to the rescue.
+huge photos?  Tired of manually scaling?  Imsanity to the rescue!
 
 == Description ==
 
-Imsanity automatically resizes  huge image uploads down to a size that is
+Imsanity automatically resizes huge image uploads down to a size that is
 more reasonable for display in browser, yet still more than large enough for typical website use.
 The plugin is configurable with a max width, height and quality.  When a contributor uploads an
 image that is larger than the configured size, Imsanity will automatically scale it down to the
@@ -87,7 +87,7 @@ The size limit that imsanity uses is configurable.  The default value is large e
 the average vistors entire screen without scaling so it is still more than large enough for
 typical usage.
 
-= 4. Why would I NOT want to use this plugin?
+= 4. Why would I NOT want to use this plugin? =
 
 You might not want to use Imsanity if you use WordPress as a stock art download
 site, provide high-res images for print or use WordPress as a high-res photo
@@ -114,10 +114,13 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Upgrade Notice ==
 
-= 2.2.2 =
-* replaced image_resize() call for wordpress prior to 3.5
+= 2.2.3 =
+* improved error reporting in bulk resize
 
 == Changelog ==
+
+= 2.2.3 =
+* improved error reporting in bulk resize
 
 = 2.2.2 =
 * replaced image_resize() call for wordpress prior to 3.5

@@ -33,10 +33,18 @@ function imsanity_resize_next(images,next_index)
 		{action: 'imsanity_resize_image', id: images[next_index]}, 
 		function(response) 
 		{
-			var result = JSON.parse(response);
-
+			var result;
 			var target = jQuery('#resize_results'); 
-			target.append('<div>'+ result['message'] +'</div>');
+			
+			try {
+				result = JSON.parse(response);
+				target.append('<div>'+ result['message'] +'</div>');
+			}
+			catch(e) {
+				target.append('<div>Error parsing server response for POST ' + images[next_index] + ': '+ e.message +'.  Check the console for details.</div>');
+				if (console) console.warn('Invalid JSON Response: ' + response);
+		    }
+
 			target.animate({scrollTop: target.height()}, 500);
 
 			// recurse
@@ -85,7 +93,7 @@ function imsanity_load_images(container_id)
 						
 						for (var i = 0; i < images.length; i++)
 						{
-							target.append('<div><input class="imsanity_image_cb" name="imsanity_images" value="' + images[i].id + '" type="checkbox" checked="checked" /> '+ images[i].file +' ('+images[i].width+' x '+images[i].height+')</div>');
+							target.append('<div><input class="imsanity_image_cb" name="imsanity_images" value="' + images[i].id + '" type="checkbox" checked="checked" /> POST ' + images[i].id + ': ' + images[i].file +' ('+images[i].width+' x '+images[i].height+')</div>');
 						}
 
 						container.append('<p class="submit"><button class="button-primary" onclick="imsanity_resize_images();">Resize Checked Images...</button></p>');
