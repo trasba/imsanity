@@ -1,6 +1,6 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# [LANGUAGE] TRANSLATION FOR IMSANITY WORDPRESS PLUGIN
+# Copyright (C) Jason Hinkle <verysimple.com>
+# This file is distributed under the same license as Imsanity.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
@@ -61,21 +61,21 @@ msgid "Use global Imsanity settings (below) for all sites"
 msgstr ""
 
 #: settings.php:219 settings.php:544
-msgid "Max width/height for images uploaded within a Page/Post"
+msgid "Images uploaded within a Page/Post"
 msgstr ""
 
 #: settings.php:222 settings.php:230 settings.php:238 settings.php:546
 #: settings.php:553 settings.php:560
-msgid " (Enter 0 to disable)"
+msgid " (or or enter 0 to disable)"
 msgstr ""
 
 #: settings.php:227 settings.php:551
-msgid "Max width/height for images uploaded directly to the Media Library"
+msgid "Images uploaded directly to the Media Library"
 msgstr ""
 
 #: settings.php:235 settings.php:558
 msgid ""
-"Max width/height for images uploaded elsewhere (Theme headers, backgrounds, "
+"Images uploaded elsewhere (Theme headers, backgrounds, "
 "logos, etc)"
 msgstr ""
 
