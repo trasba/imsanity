@@ -195,8 +195,7 @@ function imsanity_resize_image()
  */
 function imsanity_admin_javascript()
 {
-	wp_register_script( 'my_plugin_script', plugins_url('/imsanity/scripts/imsanity.js?v='.IMSANITY_VERSION), array('jquery'));
-	wp_enqueue_script( 'my_plugin_script' );
+	// javascript is queued in settings.php imsanity_settings_banner()
 }
 
 ?>

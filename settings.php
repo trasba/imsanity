@@ -431,6 +431,10 @@ function imsanity_settings_css()
  */
 function imsanity_settings_banner()
 {
+	// register the scripts that are used by the bulk resizer
+	wp_register_script( 'my_plugin_script', plugins_url('/imsanity/scripts/imsanity.js?v='.IMSANITY_VERSION), array('jquery'));
+	wp_enqueue_script( 'my_plugin_script' );
+	
 	echo '
 	<div id="imsanity_header" style="float: left;">
 		<a href="http://verysimple.com/products/imsanity/"><img alt="Imsanity" src="' . plugins_url() . '/imsanity/images/imsanity.png" style="float: right; margin-left: 15px;"/></a>
