@@ -8,6 +8,7 @@
 // register the plugin settings menu
 add_action('admin_menu', 'imsanity_create_menu');
 add_action( 'network_admin_menu', 'imsanity_register_network' );
+add_filter("plugin_action_links_imsanity/imsanity.php", 'imsanity_settings_link' );
 
 // activation hooks
 // TODO: custom table is not removed because de-activating one site shouldn't affect the entire server
@@ -18,6 +19,16 @@ register_activation_hook('imsanity/imsanity.php', 'imsanity_maybe_created_custom
 
 // settings cache
 $_imsanity_multisite_settings = null;
+
+/**
+ * Settings link that appears on the plugins overview page
+ * @param array $links
+ * @return array
+ */
+function imsanity_settings_link($links) {
+	$links[] = '<a href="'. get_admin_url(null, 'options-general.php?page='.__FILE__) .'">Settings</a>';
+	return $links;
+}
 
 /**
  * Create the settings menu item in the WordPress admin navigation and

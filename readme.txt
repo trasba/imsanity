@@ -3,7 +3,7 @@ Contributors: verysimple
 Donate link: http://verysimple.com/products/imsanity/
 Tags: imsanity, image, images, automatic scale, automatic resize, image resizer, image scaler, automatic image resizer, auto image resize, auto image resizer, space saver, image shrinker, image skruncher, image cruncher
 Requires at least: 2.9
-Tested up to: 3.6
+Tested up to: 3.9
 Stable tag: trunk
 
 Imsanity automatically resizes huge image uploads.  Are contributors uploading
