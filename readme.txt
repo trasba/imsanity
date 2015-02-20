@@ -129,6 +129,9 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Changelog ==
 
+= 2.3.4	 =
+* Security update to network settings page
+
 = 2.3.3	 =
 * Update default size from 1024 to 2048
 * Tested up to WordPress 4.1.1
