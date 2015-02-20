@@ -124,16 +124,13 @@ be posted on the support forum at http://wordpress.org/tags/imsanity
 
 == Upgrade Notice ==
 
-= 2.3.3	 =
-* Update default size from 1024 to 2028
-* Tested up to WordPress 4.1.1
-* Move screenshots to /assets folder
-* Added 256x256 icon
+= 2.3.4	 =
+* Security update to network settings page
 
 == Changelog ==
 
 = 2.3.3	 =
-* Update default size from 1024 to 2028
+* Update default size from 1024 to 2048
 * Tested up to WordPress 4.1.1
 * Move screenshots to /assets folder
 * Added 256x256 icon
