@@ -129,6 +129,9 @@ function imsanity_handle_upload($params)
 
 		list($oldW, $oldH) = getimagesize( $oldPath );
 		
+		//adding max filesize
+		$oldSize = filesize ( $oldPath );
+		
 		/* HACK: if getimagesize returns an incorrect value (sometimes due to bad EXIF data..?)
 		$img = imagecreatefromjpeg ($oldPath);
 		$oldW = imagesx ($img);
@@ -143,7 +146,8 @@ function imsanity_handle_upload($params)
 		$oldH = $header['width']; 
 		//*/
 
-		if (($oldW > $maxW && $maxW > 0) || ($oldH > $maxH && $maxH > 0))
+		//adding fixed max filesize ToDo add it to Settings
+		if (($oldW > $maxW && $maxW > 0) || ($oldH > $maxH && $maxH > 0) || ($oldSize > 400000) )
 		{
 			$quality = imsanity_get_option('imsanity_quality',IMSANITY_DEFAULT_QUALITY);
 
